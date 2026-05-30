@@ -98,43 +98,84 @@ V1__create_initial_tables.sql
 V2__add_new_columns.sql
 ```
 
-## Organização do Código
+## Arquitetura
 
-O projeto deve seguir uma organização por domínio/feature. Cada módulo agrupa seus próprios controllers, DTOs, entidades, repositories, services e mappers.
+O projeto deve seguir uma abordagem de monolito modular com Clean Architecture. Cada módulo representa uma capacidade de negócio e deve ter fronteiras claras, evitando dependências diretas entre detalhes internos de módulos diferentes.
 
 Estrutura recomendada:
 
 ```text
 src/main/java/br/com/primetechsistema/primetms
-├── common
-│   ├── config
-│   ├── exception
-│   ├── response
-│   ├── validation
-│   └── security
+├── shared
+│   ├── application
+│   ├── domain
+│   ├── infrastructure
+│   └── presentation
 │
-└── dominio
-    ├── controller
-    ├── dto
-    ├── entity
-    ├── repository
-    ├── service
-    └── mapper
+└── modules
+    └── dominio
+        ├── application
+        │   ├── command
+        │   ├── query
+        │   ├── usecase
+        │   └── port
+        │
+        ├── domain
+        │   ├── model
+        │   ├── event
+        │   ├── exception
+        │   └── service
+        │
+        ├── infrastructure
+        │   ├── persistence
+        │   ├── mapper
+        │   └── config
+        │
+        └── presentation
+            ├── controller
+            └── dto
 ```
 
-Exemplo para um domínio `cliente`:
+Exemplo para um módulo `cliente`:
 
 ```text
-cliente
-├── controller
-├── dto
-├── entity
-├── repository
-├── service
-└── mapper
+modules/cliente
+├── application
+│   ├── command
+│   ├── query
+│   ├── usecase
+│   └── port
+├── domain
+│   ├── model
+│   ├── event
+│   ├── exception
+│   └── service
+├── infrastructure
+│   ├── persistence
+│   ├── mapper
+│   └── config
+└── presentation
+    ├── controller
+    └── dto
 ```
 
-Esse padrão evita que o projeto cresça com pastas genéricas muito grandes, como `controller`, `service` e `repository` concentrando arquivos de todos os domínios.
+Responsabilidades principais:
+
+- `domain`: regras de negócio, entidades, value objects, eventos e contratos centrais do domínio.
+- `application`: casos de uso, comandos, consultas e portas necessárias para executar regras de negócio.
+- `infrastructure`: implementações técnicas, persistência, integrações externas, configurações e mappers.
+- `presentation`: controllers REST, DTOs de entrada/saída e adaptação da API HTTP.
+- `shared`: código compartilhado entre módulos, mantendo apenas elementos realmente transversais.
+
+Regra de dependência:
+
+```text
+presentation -> application -> domain
+infrastructure -> application/domain
+domain -> sem dependência de frameworks ou camadas externas
+```
+
+Novos módulos devem ser criados dentro de `modules` e seguir o mesmo padrão.
 
 ## Produção
 
