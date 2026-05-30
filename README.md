@@ -98,6 +98,44 @@ V1__create_initial_tables.sql
 V2__add_new_columns.sql
 ```
 
+## Organização do Código
+
+O projeto deve seguir uma organização por domínio/feature. Cada módulo agrupa seus próprios controllers, DTOs, entidades, repositories, services e mappers.
+
+Estrutura recomendada:
+
+```text
+src/main/java/br/com/primetechsistema/primetms
+├── common
+│   ├── config
+│   ├── exception
+│   ├── response
+│   ├── validation
+│   └── security
+│
+└── dominio
+    ├── controller
+    ├── dto
+    ├── entity
+    ├── repository
+    ├── service
+    └── mapper
+```
+
+Exemplo para um domínio `cliente`:
+
+```text
+cliente
+├── controller
+├── dto
+├── entity
+├── repository
+├── service
+└── mapper
+```
+
+Esse padrão evita que o projeto cresça com pastas genéricas muito grandes, como `controller`, `service` e `repository` concentrando arquivos de todos os domínios.
+
 ## Produção
 
 Em produção, use o profile `prod` e configure as variáveis de ambiente no servidor, pipeline ou orquestrador:
