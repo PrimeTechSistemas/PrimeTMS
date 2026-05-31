@@ -10,6 +10,21 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: prime_tms
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -26,3 +41,8 @@ jobs:
 
       - name: Build e testes
         run: ./mvnw verify
+        env:
+          SPRING_PROFILES_ACTIVE: dev
+          DB_URL: jdbc:postgresql://localhost:5432/prime_tms
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
